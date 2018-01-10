@@ -6,8 +6,10 @@
 * @file		DirectSurface.h
 * @brief	This File is DirectSurface DLL Project.
 * @author	Alopex/Helium
-* @version	v1.00a
-* @date		2017-12-9	v1.00a	alopex	Create This File
+* @version	v1.11a
+* @date		2017-12-9	v1.00a	alopex	Create This File.
+* @date		2018-1-10	v1.10a	alopex	Code Add dxerr & d3dcompiler Library and Modify Verify.
+* @date		2018-1-10	v1.11a	alopex	Add Thread Safe File & Variable(DirectThreadSafe).
 */
 #ifndef __DIRECTSURFACE_H_
 #define __DIRECTSURFACE_H_
@@ -30,6 +32,9 @@ private:
 	IDirect3DSurface9*	m_pD3D9Surface;										//The Direct3D 9 Surface(D3D9绘制表面)
 	IDirect3DSurface9*	m_pD3D9BackSurface;									//The Direct3D 9 Surface(D3D9后台表面)
 
+	CRITICAL_SECTION m_cs;													//Thread Safe(CriticalSection)
+	bool m_bThreadSafe;														//Thread Safe Status
+
 public:
 	DirectSurface();														//DirectSurface Constructor Function(构造函数)
 	~DirectSurface();														//DirectSurface Destructor  Function(析构函数)
@@ -48,13 +53,13 @@ public:
 	//初始化
 	virtual HRESULT WINAPI DirectSurfaceInit(void);							//DirectSurface Initialize(DirectSurface初始化)
 
-	//加载纹理
+	//加载表面
 	virtual HRESULT WINAPI DirectSurfaceLoadSurface(LPWSTR lpszSurface, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);										//DirectSurface Load Surface From File(DirectSurface导入纹理)(文件加载)
 	virtual HRESULT WINAPI DirectSurfaceLoadSurface(IDirect3DSurface9* pSurface, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);							//DirectSurface Load Surface From File(DirectSurface导入纹理)(表面加载)
 	virtual HRESULT WINAPI DirectSurfaceLoadSurface(LPCVOID lpcszArray, UINT nArraySize, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);					//DirectSurface Load Surface From File(DirectSurface导入纹理)(内存文件加载)
 	virtual HRESULT WINAPI DirectSurfaceLoadSurface(LPCVOID lpcszArray, D3DFORMAT Format, UINT nPitch, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);		//DirectSurface Load Surface From File(DirectSurface导入纹理)(内存加载)
 
-	//渲染纹理
+	//渲染表面
 	virtual void WINAPI DirectSurfaceRender(const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);																	//DirectSurface Render Surface(纹理)
 	virtual void WINAPI DirectSurfaceRender(DWORD dwColor);																												//DirectSurface Render Surface(纯色)				
 

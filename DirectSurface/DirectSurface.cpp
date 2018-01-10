@@ -6,11 +6,14 @@
 * @file		DirectSurface.cpp
 * @brief	This File is DirectSurface DLL Project.
 * @author	Alopex/Helium
-* @version	v1.00a
-* @date		2017-12-9	v1.00a	alopex	Create This File
+* @version	v1.11a
+* @date		2017-12-9	v1.00a	alopex	Create This File.
+* @date		2018-1-10	v1.10a	alopex	Code Add dxerr & d3dcompiler Library and Modify Verify.
+* @date		2018-1-10	v1.11a	alopex	Add Thread Safe File & Variable(DirectThreadSafe).
 */
 #include "DirectCommon.h"
 #include "DirectSurface.h"
+#include "DirectThreadSafe.h"
 
 //DriectSurface主要用于2D游戏场景绘制
 
@@ -23,6 +26,9 @@
 //------------------------------------------------------------------
 DirectSurface::DirectSurface()
 {
+	m_bThreadSafe = true;									//线程安全
+	if (m_bThreadSafe) InitializeCriticalSection(&m_cs);	//初始化临界区
+
 	m_pD3D9Device = NULL;			//IDirect3DDevice9接口指针初始化(NULL)
 	m_pD3D9Surface = NULL;			//IDirect3DSurface9接口指针初始化(NULL)
 	m_pD3D9BackSurface = NULL;		//IDirect3DSurface9接口指针初始化(NULL)
@@ -39,6 +45,8 @@ DirectSurface::~DirectSurface()
 {
 	SAFE_RELEASE(m_pD3D9Surface);		//IDirect3DSurface9接口指针释放
 	SAFE_RELEASE(m_pD3D9BackSurface);	//IDirect3DSurface9接口指针释放
+
+	if (m_bThreadSafe) DeleteCriticalSection(&m_cs);	//删除临界区
 }
 
 //------------------------------------------------------------------
@@ -50,6 +58,9 @@ DirectSurface::~DirectSurface()
 //------------------------------------------------------------------
 DirectSurface::DirectSurface(IDirect3DDevice9* pD3D9Device)
 {
+	m_bThreadSafe = true;									//线程安全
+	if (m_bThreadSafe) InitializeCriticalSection(&m_cs);	//初始化临界区
+
 	m_pD3D9Device = pD3D9Device;	//IDirect3DDevice9接口指针初始化(NULL)
 	m_pD3D9Surface = NULL;			//IDirect3DSurface9接口指针初始化(NULL)
 }
@@ -63,6 +74,7 @@ DirectSurface::DirectSurface(IDirect3DDevice9* pD3D9Device)
 //------------------------------------------------------------------
 IDirect3DDevice9* WINAPI DirectSurface::DirectSurfaceGetDevice(void) const
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
 	return m_pD3D9Device;
 }
 
@@ -75,6 +87,7 @@ IDirect3DDevice9* WINAPI DirectSurface::DirectSurfaceGetDevice(void) const
 //------------------------------------------------------------------
 IDirect3DSurface9* WINAPI DirectSurface::DirectSurfaceGetSurface(void) const
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
 	return m_pD3D9Surface;
 }
 
@@ -87,6 +100,7 @@ IDirect3DSurface9* WINAPI DirectSurface::DirectSurfaceGetSurface(void) const
 //-----------------------------------------------------------------------
 void WINAPI DirectSurface::DirectSurfaceSetDevice(IDirect3DDevice9* pD3D9Device)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
 	m_pD3D9Device = pD3D9Device;
 }
 
@@ -99,6 +113,7 @@ void WINAPI DirectSurface::DirectSurfaceSetDevice(IDirect3DDevice9* pD3D9Device)
 //-----------------------------------------------------------------------
 void WINAPI DirectSurface::DirectSurfaceSetSurface(IDirect3DSurface9* pD3D9Surface)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
 	m_pD3D9Surface = pD3D9Surface;
 }
 
@@ -111,6 +126,7 @@ void WINAPI DirectSurface::DirectSurfaceSetSurface(IDirect3DSurface9* pD3D9Surfa
 //-----------------------------------------------------------------------
 HRESULT WINAPI DirectSurface::DirectSurfaceInit(void)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
 	D3DSURFACE_DESC Desc;
 
 	VERIFY(m_pD3D9Device->GetBackBuffer(NULL, NULL, D3DBACKBUFFER_TYPE_MONO, &m_pD3D9BackSurface));												//获取后台缓冲表面
@@ -129,6 +145,8 @@ HRESULT WINAPI DirectSurface::DirectSurfaceInit(void)
 //-----------------------------------------------------------------------
 HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(LPWSTR lpszSurface, const RECT* pDestRect, const RECT* pSrcRect)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
+
 	if (!m_pD3D9Surface) return E_FAIL;
 
 	VERIFY(D3DXLoadSurfaceFromFile(m_pD3D9Surface, NULL, pDestRect, lpszSurface, pSrcRect, D3DX_FILTER_NONE, NULL, NULL));
@@ -145,6 +163,8 @@ HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(LPWSTR lpszSurface, const
 //-----------------------------------------------------------------------
 HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(IDirect3DSurface9* pSurface, const RECT* pDestRect, const RECT* pSrcRect)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
+
 	if (!m_pD3D9Surface) return E_FAIL;
 
 	VERIFY(D3DXLoadSurfaceFromSurface(m_pD3D9Surface, NULL, pDestRect, pSurface, NULL, pSrcRect, D3DX_FILTER_NONE, NULL));
@@ -161,6 +181,8 @@ HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(IDirect3DSurface9* pSurfa
 //-----------------------------------------------------------------------
 HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(LPCVOID lpcszArray, UINT nArraySize, const RECT* pDestRect, const RECT* pSrcRect)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
+
 	if (!m_pD3D9Surface) return E_FAIL;
 
 	VERIFY(D3DXLoadSurfaceFromFileInMemory(m_pD3D9Surface, NULL, pDestRect, lpcszArray, nArraySize, pSrcRect, D3DX_FILTER_NONE, NULL, NULL));
@@ -177,6 +199,8 @@ HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(LPCVOID lpcszArray, UINT 
 //-----------------------------------------------------------------------
 HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(LPCVOID lpcszArray, D3DFORMAT Format, UINT nPitch, const RECT* pDestRect, const RECT* pSrcRect)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
+
 	if (!m_pD3D9Surface) return E_FAIL;
 
 	VERIFY(D3DXLoadSurfaceFromMemory(m_pD3D9Surface, NULL, pDestRect, lpcszArray, Format, nPitch, NULL, pSrcRect, D3DX_FILTER_NONE, NULL));
@@ -193,6 +217,7 @@ HRESULT WINAPI DirectSurface::DirectSurfaceLoadSurface(LPCVOID lpcszArray, D3DFO
 //-------------------------------------------------------------------------------
 void WINAPI DirectSurface::DirectSurfaceRender(const RECT* pDestRect, const RECT* pSrcRect)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
 	m_pD3D9Device->StretchRect(m_pD3D9Surface, pDestRect, m_pD3D9BackSurface, pSrcRect, D3DTEXF_NONE);
 }
 
@@ -205,6 +230,7 @@ void WINAPI DirectSurface::DirectSurfaceRender(const RECT* pDestRect, const RECT
 //-----------------------------------------------------------------------
 void WINAPI DirectSurface::DirectSurfaceRender(DWORD dwColor)
 {
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
 	D3DSURFACE_DESC Desc;
 	D3DLOCKED_RECT Rect;
 
