@@ -6,10 +6,11 @@
 * @file		DirectSurface.h
 * @brief	This File is DirectSurface DLL Project.
 * @author	Alopex/Helium
-* @version	v1.11a
+* @version	v1.12a
 * @date		2017-12-9	v1.00a	alopex	Create This File.
 * @date		2018-1-10	v1.10a	alopex	Code Add dxerr & d3dcompiler Library and Modify Verify.
 * @date		2018-1-10	v1.11a	alopex	Add Thread Safe File & Variable(DirectThreadSafe).
+* @date		2018-4-12	v1.12a	alopex	Add Macro Call Mode.
 */
 #ifndef __DIRECTSURFACE_H_
 #define __DIRECTSURFACE_H_
@@ -23,6 +24,8 @@
 #else
 #define DIRECTSURFACE_API	__declspec(dllimport)
 #endif
+
+#define DIRECTSURFACE_CALLMODE	__stdcall
 
 //Class Definition
 class DIRECTSURFACE_API DirectSurface
@@ -43,25 +46,25 @@ public:
 	DirectSurface(IDirect3DDevice9* pD3D9Device);							//DirectSurface Constructor Function(构造函数)
 
 	//访问
-	IDirect3DDevice9* WINAPI DirectSurfaceGetDevice(void) const;			//DirectSurface Get D3D9Device(获取D3D9设备)
-	IDirect3DSurface9* WINAPI DirectSurfaceGetSurface(void) const;			//DirectSurface Get D3D9Surface(获取D3D9表面)
+	IDirect3DDevice9* DIRECTSURFACE_CALLMODE DirectSurfaceGetDevice(void) const;			//DirectSurface Get D3D9Device(获取D3D9设备)
+	IDirect3DSurface9* DIRECTSURFACE_CALLMODE DirectSurfaceGetSurface(void) const;			//DirectSurface Get D3D9Surface(获取D3D9表面)
 
 	//控制
-	void WINAPI DirectSurfaceSetDevice(IDirect3DDevice9* pD3D9Device);		//DirectSurface Set D3D9Device(设置D3D9设备)
-	void WINAPI DirectSurfaceSetSurface(IDirect3DSurface9* pD3D9Surface);	//DirectSurface Set D3D9Surface(获取D3D9表面)
+	void DIRECTSURFACE_CALLMODE DirectSurfaceSetDevice(IDirect3DDevice9* pD3D9Device);		//DirectSurface Set D3D9Device(设置D3D9设备)
+	void DIRECTSURFACE_CALLMODE DirectSurfaceSetSurface(IDirect3DSurface9* pD3D9Surface);	//DirectSurface Set D3D9Surface(获取D3D9表面)
 
 	//初始化
-	virtual HRESULT WINAPI DirectSurfaceInit(void);							//DirectSurface Initialize(DirectSurface初始化)
+	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceInit(void);							//DirectSurface Initialize(DirectSurface初始化)
 
 	//加载表面
-	virtual HRESULT WINAPI DirectSurfaceLoadSurface(LPWSTR lpszSurface, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);										//DirectSurface Load Surface From File(DirectSurface导入纹理)(文件加载)
-	virtual HRESULT WINAPI DirectSurfaceLoadSurface(IDirect3DSurface9* pSurface, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);							//DirectSurface Load Surface From File(DirectSurface导入纹理)(表面加载)
-	virtual HRESULT WINAPI DirectSurfaceLoadSurface(LPCVOID lpcszArray, UINT nArraySize, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);					//DirectSurface Load Surface From File(DirectSurface导入纹理)(内存文件加载)
-	virtual HRESULT WINAPI DirectSurfaceLoadSurface(LPCVOID lpcszArray, D3DFORMAT Format, UINT nPitch, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);		//DirectSurface Load Surface From File(DirectSurface导入纹理)(内存加载)
+	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceLoadSurface(LPWSTR lpszSurface, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);										//DirectSurface Load Surface From File(DirectSurface导入纹理)(文件加载)
+	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceLoadSurface(IDirect3DSurface9* pSurface, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);							//DirectSurface Load Surface From File(DirectSurface导入纹理)(表面加载)
+	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceLoadSurface(LPCVOID lpcszArray, UINT nArraySize, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);					//DirectSurface Load Surface From File(DirectSurface导入纹理)(内存文件加载)
+	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceLoadSurface(LPCVOID lpcszArray, D3DFORMAT Format, UINT nPitch, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);		//DirectSurface Load Surface From File(DirectSurface导入纹理)(内存加载)
 
 	//渲染表面
-	virtual void WINAPI DirectSurfaceRender(const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);																	//DirectSurface Render Surface(纹理)
-	virtual void WINAPI DirectSurfaceRender(DWORD dwColor);																												//DirectSurface Render Surface(纯色)				
+	virtual void DIRECTSURFACE_CALLMODE DirectSurfaceRender(const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);																	//DirectSurface Render Surface(纹理)
+	virtual void DIRECTSURFACE_CALLMODE DirectSurfaceRender(DWORD dwColor);																												//DirectSurface Render Surface(纯色)				
 
 };
 
