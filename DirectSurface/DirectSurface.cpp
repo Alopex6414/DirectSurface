@@ -6,13 +6,14 @@
 * @file		DirectSurface.cpp
 * @brief	This File is DirectSurface DLL Project.
 * @author	Alopex/Helium
-* @version	v1.14a
+* @version	v1.15a
 * @date		2017-12-9	v1.00a	alopex	Create This File.
 * @date		2018-01-10	v1.10a	alopex	Code Add dxerr & d3dcompiler Library and Modify Verify.
 * @date		2018-01-10	v1.11a	alopex	Add Thread Safe File & Variable(DirectThreadSafe).
 * @date		2018-04-12	v1.12a	alopex	Add Macro Call Mode.
 * @date		2018-06-22	v1.13a	alopex	Add Version Information.
 * @date		2018-06-23	v1.14a	alopex	Repair Bug.
+* @date		2018-06-27	v1.15a	alopex	Add Reset Function.
 */
 #include "DirectCommon.h"
 #include "DirectSurface.h"
@@ -136,6 +137,21 @@ HRESULT DIRECTSURFACE_CALLMODE DirectSurface::DirectSurfaceInit(void)
 	VERIFY(m_pD3D9BackSurface->GetDesc(&Desc));																									//获取Desc
 	VERIFY(m_pD3D9Device->CreateOffscreenPlainSurface(Desc.Width, Desc.Height, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_pD3D9Surface, NULL));		//创建离屏表面
 
+	return S_OK;
+}
+
+//-----------------------------------------------------------------------
+// @Function:	 DirectSurfaceReset(void)
+// @Purpose: DirectSurface重置
+// @Since: v1.00a
+// @Para: None
+// @Return: None
+//-----------------------------------------------------------------------
+HRESULT DIRECTSURFACE_CALLMODE DirectSurface::DirectSurfaceReset(void)
+{
+	DirectThreadSafe ThreadSafe(&m_cs, m_bThreadSafe);
+	SAFE_RELEASE(m_pD3D9Surface);		//IDirect3DSurface9接口指针释放
+	SAFE_RELEASE(m_pD3D9BackSurface);	//IDirect3DSurface9接口指针释放
 	return S_OK;
 }
 

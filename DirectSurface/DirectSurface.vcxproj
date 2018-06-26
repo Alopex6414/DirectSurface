@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectSurface.cpp" />
+    <ClCompile Include="DirectThreadSafe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectSurface.rc" />

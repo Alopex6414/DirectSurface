@@ -6,13 +6,14 @@
 * @file		DirectSurface.h
 * @brief	This File is DirectSurface DLL Project.
 * @author	Alopex/Helium
-* @version	v1.14a
+* @version	v1.15a
 * @date		2017-12-9	v1.00a	alopex	Create This File.
 * @date		2018-01-10	v1.10a	alopex	Code Add dxerr & d3dcompiler Library and Modify Verify.
 * @date		2018-01-10	v1.11a	alopex	Add Thread Safe File & Variable(DirectThreadSafe).
 * @date		2018-04-12	v1.12a	alopex	Add Macro Call Mode.
 * @date		2018-06-22	v1.13a	alopex	Add Version Information.
 * @date		2018-06-23	v1.14a	alopex	Repair Bug.
+* @date		2018-06-27	v1.15a	alopex	Add Reset Function.
 */
 #ifndef __DIRECTSURFACE_H_
 #define __DIRECTSURFACE_H_
@@ -57,6 +58,9 @@ public:
 
 	//初始化
 	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceInit(void);							//DirectSurface Initialize(DirectSurface初始化)
+
+	//重置
+	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceReset(void);						//DirectSurface Reset(DirectSurface丢失设备重置)
 
 	//加载表面
 	virtual HRESULT DIRECTSURFACE_CALLMODE DirectSurfaceLoadSurface(LPWSTR lpszSurface, const RECT* pDestRect = NULL, const RECT* pSrcRect = NULL);										//DirectSurface Load Surface From File(DirectSurface导入纹理)(文件加载)
